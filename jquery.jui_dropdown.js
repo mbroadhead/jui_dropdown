@@ -66,7 +66,7 @@
                 // bind events
                 elem.unbind("onSelect").bind("onSelect", settings.onSelect);
 
-                elem.removeClass().addClass(settings.containerClass);
+//                elem.removeClass().addClass(settings.containerClass);
 
                 var menu_id = settings.menu_id;
                 var elem_launcher = elem; 
@@ -101,7 +101,7 @@
                     });
                 }
 
-                elem.off('click', elem_launcher).on('click', elem_launcher, function() {
+                elem.on('click', function() {
 
                     var jui_dropdown_current_menu_id = $(document).data("jui_dropdown_current_menu_id");
                     if(typeof(jui_dropdown_current_menu_id) != 'undefined') {
@@ -130,13 +130,13 @@
                     return false;
                 });
 
-                elem.off('mouseenter', elem_launcher).on('mouseenter', elem_launcher, function() {
+                elem.on('mouseenter', function() {
                     if(settings.launchOnMouseEnter) {
                         elem_launcher.trigger('click');
                     }
                 });
 
-                elem.off('mouseleave', "#" + menu_id).on('mouseleave', "#" + menu_id, function() {
+                elem_menu.on('mouseleave', function() {
                     elem_menu.hide();
                 });
 
