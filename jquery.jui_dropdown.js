@@ -8,6 +8,7 @@
  * @requires jquery (>=1.6), jquery-ui (>=1.8)
  */
 
+
 /**
  * See <a href="http://jquery.com">http://jquery.com</a>.
  * @name $
@@ -45,10 +46,10 @@
          */
         init: function(options) {
 
-            var elem = this;
-
             return this.each(function() {
 
+            	var elem = $(this);
+            	
                 /**
                  * settings and defaults
                  * using $.extend, settings modification will affect elem.data() and vive versa
@@ -67,14 +68,10 @@
 
                 elem.removeClass().addClass(settings.containerClass);
 
-                var launcher_id = settings.launcher_id;
-                var launcher_container_id = settings.launcher_container_id;
                 var menu_id = settings.menu_id;
-                var elem_launcher = $("#" + launcher_id);
-                var elem_launcher_container = $("#" + launcher_container_id);
-                var elem_menu = $("#" + menu_id);
+                var elem_launcher = elem; 
+                var elem_menu = $("ul", elem.parent());
 
-                elem_launcher_container.removeClass(settings.launcherContainerClass).addClass(settings.launcherContainerClass);
                 elem_launcher.removeClass(settings.launcherClass).addClass(settings.launcherClass);
                 elem_menu.removeClass(settings.menuClass).addClass(settings.menuClass);
 
@@ -82,15 +79,17 @@
                     elem_menu.menu().menu('refresh').hide();
 
                     elem_menu.off('click', "li").on('click', "li", function() {
-                        elem.triggerHandler('onSelect', {index: parseInt($(this).index("#" + menu_id + " li")) + 1, id: $(this).attr("id")})
+                        elem.triggerHandler('onSelect', {index: parseInt($(this).index("#" + event.target.id + " li")) + 1, id: $(this).attr("id")})
                     });
                 } else {
                     elem_menu.menu({
                         select: function(event, ui) {
-                            elem.triggerHandler('onSelect', {index: parseInt(ui.item.index("#" + menu_id + " li")) + 1, id: ui.item.attr("id")})
+                            elem.triggerHandler('onSelect', {index: parseInt(ui.item.index("#" + event.target.id + " li")) + 1, id: ui.item.attr("id")})
                         }
                     }).menu('refresh').hide();
                 }
+                
+                if( typeof(menu_id) == "undefined") menu_id = elem_menu.attr('id'); // jquery.ui auto assign a ID.
 
                 if(settings.launcher_is_UI_button) {
                     elem_launcher.button({
@@ -102,7 +101,7 @@
                     });
                 }
 
-                elem.off('click', "#" + launcher_id).on('click', "#" + launcher_id, function() {
+                elem.off('click', elem_launcher).on('click', elem_launcher, function() {
 
                     var jui_dropdown_current_menu_id = $(document).data("jui_dropdown_current_menu_id");
                     if(typeof(jui_dropdown_current_menu_id) != 'undefined') {
@@ -116,7 +115,7 @@
                     elem_menu.show().position({
                         my: settings.my_position,
                         at: settings.at_position,
-                        of: elem_launcher_container
+                        of: elem_launcher
                     });
 
                     $(document).one("click", function() {
@@ -131,7 +130,7 @@
                     return false;
                 });
 
-                elem.off('mouseenter', "#" + launcher_id).on('mouseenter', "#" + launcher_id, function() {
+                elem.off('mouseenter', elem_launcher).on('mouseenter', elem_launcher, function() {
                     if(settings.launchOnMouseEnter) {
                         elem_launcher.trigger('click');
                     }
@@ -280,12 +279,6 @@
      * @memberOf $.fn
      */
     $.fn.jui_dropdown = function(method) {
-
-        if(this.size() != 1) {
-            var err_msg = 'You must use this plugin (' + pluginName + ') with a unique element (at once)';
-            this.html('<span style="color: red;">' + 'ERROR: ' + err_msg + '</span>');
-            $.error(err_msg);
-        }
 
         // Method calling logic
         if(methods[method]) {
